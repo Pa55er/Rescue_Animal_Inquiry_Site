@@ -172,15 +172,52 @@ const makeModal = (target, index) => {
                         </div>
                     </div>
                 </section>
-                <iframe
-                    id="map"
-                    src="https://map.kakao.com/link/search/${ani.careAddr}"
-                />
+                <div id="map"></div>
             </div>
         </section>
 	`;
     docFrag.appendChild($modalBg);
     document.querySelector("body").appendChild(docFrag);
+
+    //kakao.js가 load 되었을 때 지도 생성, 안그럼 오류 발생함.
+    window.kakao.maps.load(() => {
+        // 카카오맵 api로 보호소 위치 보여주기
+        var mapContainer = document.getElementById("map"), // 지도를 표시할 div
+            mapOption = {
+                center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+                level: 3, // 지도의 확대 레벨
+            };
+
+        // 지도를 생성합니다
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+
+        // 주소-좌표 변환 객체를 생성합니다
+        var geocoder = new kakao.maps.services.Geocoder();
+
+        // 주소로 좌표를 검색합니다
+        geocoder.addressSearch(careAddr, function (result, status) {
+            // 정상적으로 검색이 완료됐으면
+            if (status === kakao.maps.services.Status.OK) {
+                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                // 결과값으로 받은 위치를 마커로 표시합니다
+                var marker = new kakao.maps.Marker({
+                    map: map,
+                    position: coords,
+                });
+
+                // 인포윈도우로 장소에 대한 설명을 표시합니다
+                var infowindow = new kakao.maps.InfoWindow({
+                    content: `<div style="width:150px;text-align:center;padding:6px 0;">${careNm}</div>`,
+                });
+                infowindow.open(map, marker);
+
+                // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                map.setCenter(coords);
+            }
+        });
+    });
+
     // modal 탈출하기
     $modalBg.addEventListener("click", (e) => {
         if (e.target.className === "modalBg") $modalBg.remove();
