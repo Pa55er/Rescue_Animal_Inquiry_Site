@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>데려가냥?</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+            integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="./style/style.css" />
+        <script src="./config/apikey.js" defer></script>
+        <script src="./js/common.js" defer></script>
+    </head>
+    <body>
+        <header>
+            <div class="h_top">
+                <h1>데려가냥?</h1>
+                <nav class="menu">
+                    <a href="#">Home</a>
+                    <a href="#">Category</a>
+                    <a href="#">About</a>
+                </nav>
+            </div>
+            <p class="hText">
+                <span>One More Friend</span><br />
+                Thousands More Fun!
+            </p>
+            <img src="./img/dogs.svg" alt="헤더 이미지" />
+            <div class="box1"></div>
+            <div class="box2"></div>
+            <div class="box3"></div>
+            <div class="box4"></div>
+            <div class="box5"></div>
+            <div class="box6"></div>
+            <div class="box7"></div>
+        </header>
+        <main>
+            <section class="sec1">
+                <div class="s1_top">
+                    <img src="./img/dog1.svg" alt="강아지1" />
+                    <h2>빨리 찾아가세요<em>!</em></h2>
+                    <img src="./img/cat1.svg" alt="고양이1" />
+                </div>
+                <ul id="grid1"></ul>
+                <div class="pg1"></div>
+            </section>
+            <section class="sec2">
+                <div class="s2_top">
+                    <img src="./img/dog2.svg" alt="강아지2" />
+                    <h2>엄마 아빠를 찾아요<em>!</em></h2>
+                    <img src="./img/cat2.svg" alt="고양이2" />
+                </div>
+                <div class="selects">
+                    <select name="city" id="city">
+                        <option value="null" selected>시/도 선택</option>
+                    </select>
+                    <select name="district" id="district">
+                        <option value="null" selected>시/군/구 선택</option>
+                    </select>
+                    <select name="species" id="species">
+                        <option value="null" selected>개/고양이 선택</option>
+                        <option value="417000">개</option>
+                        <option value="422400">고양이</option>
+                        <option value="429900">기타</option>
+                    </select>
+                    <select name="cultivar" id="cultivar">
+                        <option value="null" selected>품종 선택</option>
+                    </select>
+                </div>
+                <ul id="grid2"></ul>
+                <div></div>
+                <div class="loader">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </section>
+        </main>
+
+        <div class="topBtn">
+            <i class="fa-solid fa-arrow-up"></i>
+            <p>맨 위로</p>
+        </div>
+    </body>
+</html>
