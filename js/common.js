@@ -1,5 +1,7 @@
-const API_KEY_DECODING = config.decoding;
-const API_KEY_ENCODING = config.encoding;
+import config from "../config/apikey.js";
+
+const DECODING_API_KEY = config.ABANDONMENTPUBLICSRVC_DECODING_API_KEY;
+const ENCODING_API_KEY = config.ABANDONMENTPUBLICSRVC_ENCODING_API_KEY;
 
 const $grid1 = document.getElementById("grid1");
 const $grid2 = document.getElementById("grid2");
@@ -16,15 +18,15 @@ let url1 = new URL(
 );
 // select 1 url
 let url2 = new URL(
-    `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/sido?numOfRows=20&pageNo=1&_type=json&serviceKey=${API_KEY_ENCODING}`
+    `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/sido?numOfRows=20&pageNo=1&_type=json&serviceKey=${ENCODING_API_KEY}`
 );
 // select 2 url
 let url3 = new URL(
-    `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/sigungu?_type=json&serviceKey=${API_KEY_ENCODING}`
+    `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/sigungu?_type=json&serviceKey=${ENCODING_API_KEY}`
 );
 // select 4 url
 let url4 = new URL(
-    `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/kind?_type=json&serviceKey=${API_KEY_ENCODING}`
+    `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/kind?_type=json&serviceKey=${ENCODING_API_KEY}`
 );
 let url5 = new URL(
     `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/abandonmentPublic`
@@ -339,7 +341,7 @@ const fetchGrid1 = async (page = 1) => {
         url1.searchParams.set("pageNo", page);
         url1.searchParams.set("numOfRows", pageSize);
         url1.searchParams.set("_type", "json");
-        url1.searchParams.set("serviceKey", API_KEY_DECODING);
+        url1.searchParams.set("serviceKey", DECODING_API_KEY);
 
         const res = await fetch(url1);
         const data = await res.json();
@@ -542,7 +544,7 @@ const fetchGrid2 = async () => {
         url5.searchParams.set("pageNo", pageCount);
         url5.searchParams.set("numOfRows", pageSize);
         url5.searchParams.set("_type", "json");
-        url5.searchParams.set("serviceKey", API_KEY_DECODING);
+        url5.searchParams.set("serviceKey", DECODING_API_KEY);
 
         list2 = [];
         index = 0;
