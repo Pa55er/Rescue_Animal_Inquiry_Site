@@ -66,7 +66,6 @@ const getDate3 = (str) => {
 const makeModal = (target, index) => {
     const lists = target === 1 ? list1 : list2;
     const ani = lists[index];
-
     let popfile = ani.popfile || "./img/No_Image.jpg";
     let noticeNo = ani.noticeNo || "공고번호 없음";
     let title = ani.kindCd || "제목없음";
@@ -181,6 +180,11 @@ const makeModal = (target, index) => {
     docFrag.appendChild($modalBg);
     document.querySelector("body").appendChild(docFrag);
 
+    // modal 탈출하기
+    $modalBg.addEventListener("click", (e) => {
+        if (e.target.className === "modalBg") $modalBg.remove();
+    });
+
     //kakao.js가 load 되었을 때 지도 생성, 안그럼 오류 발생함.
     window.kakao.maps.load(() => {
         // 카카오맵 api로 보호소 위치 보여주기
@@ -218,11 +222,6 @@ const makeModal = (target, index) => {
                 map.setCenter(coords);
             }
         });
-    });
-
-    // modal 탈출하기
-    $modalBg.addEventListener("click", (e) => {
-        if (e.target.className === "modalBg") $modalBg.remove();
     });
 };
 
@@ -285,8 +284,14 @@ const renderGrid1 = () => {
 				<i class="fa-solid fa-calendar-days"></i>
 				<p class="date">${period}</p>
 			</div>
-			<button class="more" onClick='makeModal(${1},${i})'>자세히보기</button>
 		`;
+        const btn = document.createElement("button");
+        btn.classList.add("more");
+        btn.innerHTML = "자세히보기";
+        btn.addEventListener("click", () => {
+            makeModal(1, i);
+        });
+        $li.appendChild(btn);
         docFrag.appendChild($li);
     });
     $grid1.innerHTML = ``;
@@ -512,8 +517,15 @@ const renderGrid2 = () => {
 				<i class="fa-solid fa-calendar-days"></i>
 				<p class="date">${period}</p>
 			</div>
-			<button class="more" onClick='makeModal(${2},${index})'>자세히보기</button>
 		`;
+        const btn = document.createElement("button");
+        btn.classList.add("more");
+        btn.innerHTML = "자세히보기";
+        btn.dataset.index = String(index);
+        btn.addEventListener("click", () => {
+            makeModal(2, parseInt(btn.dataset.index));
+        });
+        $li.appendChild(btn);
         docFrag.appendChild($li);
         index++;
     });

@@ -315,7 +315,7 @@ ul {
     position: fixed;
     right: 3rem;
     bottom: 3rem;
-    border: 1px solid green;
+    /* border: 1px solid green; */
 }
 .fa-solid.fa-arrow-up {
     width: 3.5rem;
