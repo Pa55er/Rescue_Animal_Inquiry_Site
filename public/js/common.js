@@ -11,6 +11,10 @@ const $district = document.getElementById("district");
 const $species = document.getElementById("species");
 const $cultivar = document.getElementById("cultivar");
 const $loader = document.querySelector(".loader");
+const $noticeCount = document.querySelector(".countLeft .countText1");
+const $noticeCountDif = document.querySelector(".countLeft .countText2");
+const $protectCount = document.querySelector(".countRight .countText1");
+const $protectCountDif = document.querySelector(".countRight .countText2");
 
 // section 1 url
 let url1 = new URL(
@@ -61,6 +65,136 @@ const getDate3 = (str) => {
         ? str.replace(/(\d{4})(\d{2})(\d{2})/g, "$1년 $2월 $3일")
         : "접수 날짜 없음";
 };
+
+// chart 변수들
+const chartDates = new Array(7);
+const noticeValues = new Array(7);
+const protectValues = new Array(7);
+let todayDog;
+let todayCat;
+
+// 일주일 날짜 생성
+const dateSetting = () => {
+    const today = new Date();
+    for (let i = 0; i < 7; i++) {
+        const currentDate = new Date(today);
+        currentDate.setDate(today.getDate() - i); // i일씩 빼서 지난 날짜를 구함
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+        const day = String(currentDate.getDate()).padStart(2, "0");
+
+        chartDates[chartDates.length - 1 - i] = `${year}${month}${day}`; // yyyymmdd 형식으로 배열에 추가
+    }
+};
+
+// 날짜별 fetch 및 오늘자 개,고양이 현황 fetch
+const fetchChart = () => {};
+
+// 오늘자 유기동물현황 렌더링
+const dataSetting = () => {
+    $noticeCount.textContent = noticeValues[6];
+    $noticeCountDif.textContent =
+        noticeValues[6] - noticeValues[5] >= 0
+            ? "+" + (noticeValues[6] - noticeValues[5])
+            : noticeValues[6] - noticeValues[5];
+    $protectCount.textContent = protectValues[6];
+    $protectCountDif.textContent =
+        protectValues[6] - protectValues[5] >= 0
+            ? "+" + (protectValues[6] - protectValues[5])
+            : protectValues[6] - protectValues[5];
+};
+
+// chart에 사용될 데이터 생성
+const chartInit = () => {
+    dateSetting();
+    fetchChart();
+    dataSetting();
+};
+chartInit();
+
+// chart 객체 생성 및 section 0 렌더링
+const $chart1 = document.getElementById("myChart1");
+const $chart2 = document.getElementById("myChart2");
+const lineChart = new Chart($chart1, {
+    type: "line",
+    data: {
+        // 여기 수정
+        labels: chartDates,
+        datasets: [
+            {
+                label: "공고중",
+                // 여기 수정
+                data: noticeValues,
+                borderColor: "#36A2EB",
+                backgroundColor: "#36A2EB",
+                yAxisID: "y",
+            },
+            {
+                label: "보호중",
+                // 여기 수정
+                data: protectValues,
+                borderColor: "#FF6384",
+                backgroundColor: "#FF6384",
+                yAxisID: "y",
+            },
+        ],
+    },
+    options: {
+        responsive: true,
+        interaction: {
+            mode: "index",
+            intersect: false,
+        },
+        stacked: false,
+        plugins: {
+            title: {
+                display: true,
+                text: "최근 일주일간 유기동물현황",
+                font: {
+                    size: 20,
+                },
+            },
+        },
+        scales: {
+            y: {
+                type: "linear",
+                display: true,
+                position: "left",
+            },
+        },
+    },
+});
+const pieChart = new Chart($chart2, {
+    type: "pie",
+    data: {
+        labels: ["개", "고양이"],
+        datasets: [
+            {
+                label: "Total Count",
+                // 여기 수정
+                data: [todayDog, todayCat],
+                backgroundColor: ["rgb(54, 162, 235)", "rgb(255, 99, 132)"],
+            },
+        ],
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: "top",
+            },
+            title: {
+                display: true,
+                // 여기 수정
+                text: `${getDate3(today)} 축종별 현황`,
+                font: {
+                    size: 20,
+                },
+            },
+        },
+    },
+});
 
 // modal
 const makeModal = (target, index) => {
@@ -579,7 +713,7 @@ const fetchGrid2 = async () => {
     }
 };
 
-// init
+// init section 1 ~ 2
 initSelect1();
 fetchGrid1();
 fetchGrid2();
