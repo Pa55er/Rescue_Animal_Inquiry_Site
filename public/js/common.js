@@ -11,11 +11,25 @@ const $district = document.getElementById("district");
 const $species = document.getElementById("species");
 const $cultivar = document.getElementById("cultivar");
 const $loader = document.querySelector(".loader");
+const $noticeCount = document.querySelector(".countLeft .countText1");
+const $noticeCountDif = document.querySelector(".countLeft .countText2");
+const $protectCount = document.querySelector(".countRight .countText1");
+const $protectCountDif = document.querySelector(".countRight .countText2");
+const $chart1 = document.getElementById("myChart1");
+const $chart2 = document.getElementById("myChart2");
+const $cTopTitle = document.querySelector(".c_top > h2");
+
+const urlTarget = `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/abandonmentPublic`;
+
+// section 0 url
+let url01 = new Array(7).fill(new URL(urlTarget));
+let url02 = new Array(7).fill(new URL(urlTarget));
+let urlDog = new URL(urlTarget);
+let urlCat = new URL(urlTarget);
+let urlEx = new URL(urlTarget);
 
 // section 1 url
-let url1 = new URL(
-    `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/abandonmentPublic`
-);
+let url1 = new URL(urlTarget);
 // select 1 url
 let url2 = new URL(
     `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/sido?numOfRows=20&pageNo=1&_type=json&serviceKey=${ENCODING_API_KEY}`
@@ -28,9 +42,7 @@ let url3 = new URL(
 let url4 = new URL(
     `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/kind?_type=json&serviceKey=${ENCODING_API_KEY}`
 );
-let url5 = new URL(
-    `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/abandonmentPublic`
-);
+let url5 = new URL(urlTarget);
 
 const today = getToday();
 
@@ -61,6 +73,202 @@ const getDate3 = (str) => {
         ? str.replace(/(\d{4})(\d{2})(\d{2})/g, "$1년 $2월 $3일")
         : "접수 날짜 없음";
 };
+
+// chart 변수들
+const chartDates1 = new Array(7);
+const chartDates2 = new Array(7);
+const noticeValues = [];
+const protectValues = [];
+let todayDog;
+let todayCat;
+let todayEx;
+
+// 일주일 날짜 생성
+const dateSetting = () => {
+    const today = new Date();
+    for (let i = 0; i < 7; i++) {
+        const currentDate = new Date(today);
+        currentDate.setDate(today.getDate() - i); // i일씩 빼서 지난 날짜를 구함
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+        const day = String(currentDate.getDate()).padStart(2, "0");
+
+        chartDates1[chartDates1.length - 1 - i] = `${year}${month}${day}`; // yyyymmdd 형식으로 배열에 추가
+        chartDates2[chartDates2.length - 1 - i] = `${month}.${day}`; // mm.dd 형식으로 배열에 추가
+    }
+};
+
+// 오늘자 유기동물현황 렌더링
+const dataSetting = () => {
+    $cTopTitle.textContent = `${getDate3(today)} 유기동물현황`;
+    $noticeCount.textContent = noticeValues[6];
+    $noticeCountDif.textContent =
+        noticeValues[6] - noticeValues[5] >= 0
+            ? "+" + (noticeValues[6] - noticeValues[5])
+            : noticeValues[6] - noticeValues[5];
+    $protectCount.textContent = protectValues[6];
+    $protectCountDif.textContent =
+        protectValues[6] - protectValues[5] >= 0
+            ? "+" + (protectValues[6] - protectValues[5])
+            : protectValues[6] - protectValues[5];
+};
+
+// chart 객체 생성 및 section 0 렌더링
+const makeChart = () => {
+    const lineChart = new Chart($chart1, {
+        type: "line",
+        data: {
+            // 여기 수정
+            labels: chartDates2,
+            datasets: [
+                {
+                    label: "공고중",
+                    // 여기 수정
+                    data: noticeValues,
+                    borderColor: "#36A2EB",
+                    backgroundColor: "#36A2EB",
+                    yAxisID: "y",
+                },
+                {
+                    label: "보호중",
+                    // 여기 수정
+                    data: protectValues,
+                    borderColor: "#FF6384",
+                    backgroundColor: "#FF6384",
+                    yAxisID: "y",
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                mode: "index",
+                intersect: false,
+            },
+            stacked: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: "최근 일주일간 유기동물현황",
+                    font: {
+                        size: 20,
+                    },
+                },
+            },
+            scales: {
+                y: {
+                    type: "linear",
+                    display: true,
+                    position: "left",
+                },
+            },
+        },
+    });
+    const pieChart = new Chart($chart2, {
+        type: "pie",
+        data: {
+            labels: ["개", "고양이", "기타"],
+            datasets: [
+                {
+                    label: "Total Count",
+                    // 여기 수정
+                    data: [todayDog, todayCat, todayEx],
+                    backgroundColor: [
+                        "rgb(54, 162, 235)",
+                        "rgb(255, 99, 132)",
+                        "yellow",
+                    ],
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "top",
+                },
+                title: {
+                    display: true,
+                    // 여기 수정
+                    text: `${getDate3(today)} 축종별 현황`,
+                    font: {
+                        size: 20,
+                    },
+                },
+            },
+        },
+    });
+};
+
+// url params 기본 설정
+const paramsSetting = (target) => {
+    target.searchParams.set("pageNo", 1);
+    target.searchParams.set("numOfRows", 1);
+    target.searchParams.set("_type", "json");
+    target.searchParams.set("serviceKey", DECODING_API_KEY);
+};
+
+// 날짜별 fetch 및 오늘자 개,고양이 현황 fetch
+const fetchChart = async () => {
+    try {
+        // 최근 일주일간 공고중인 개체 수
+        for (let i = 0; i < 7; i++) {
+            paramsSetting(url01[i]);
+            url01[i].searchParams.set("state", "notice");
+            url01[i].searchParams.set("bgnde", chartDates1[i]);
+            url01[i].searchParams.set("endde", chartDates1[i]);
+            const res = await fetch(url01[i]);
+            const data = await res.json();
+            noticeValues.push(data.response.body.totalCount);
+        }
+        // 최근 일주일간 보호중인 개체 수
+        for (let i = 0; i < 7; i++) {
+            paramsSetting(url02[i]);
+            url02[i].searchParams.set("state", "protect");
+            url02[i].searchParams.set("bgnde", chartDates1[i]);
+            url02[i].searchParams.set("endde", chartDates1[i]);
+            const res = await fetch(url02[i]);
+            const data = await res.json();
+            protectValues.push(data.response.body.totalCount);
+        }
+        // 오늘자 "개" 개체 수
+        paramsSetting(urlDog);
+        urlDog.searchParams.set("upkind", 417000);
+        urlDog.searchParams.set("bgnde", today);
+        urlDog.searchParams.set("endde", today);
+        let res = await fetch(urlDog);
+        let data = await res.json();
+        todayDog = data.response.body.totalCount;
+        // 오늘자 "고양이" 개체 수
+        paramsSetting(urlCat);
+        urlCat.searchParams.set("upkind", 422400);
+        urlCat.searchParams.set("bgnde", today);
+        urlCat.searchParams.set("endde", today);
+        res = await fetch(urlCat);
+        data = await res.json();
+        todayCat = data.response.body.totalCount;
+        // 오늘자 "기타" 개체 수
+        paramsSetting(urlEx);
+        urlEx.searchParams.set("upkind", 429900);
+        urlEx.searchParams.set("bgnde", today);
+        urlEx.searchParams.set("endde", today);
+        res = await fetch(urlEx);
+        data = await res.json();
+        todayEx = data.response.body.totalCount;
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+// chart에 사용될 데이터 생성 및 렌더링
+const chartInit = async () => {
+    dateSetting();
+    await fetchChart();
+    dataSetting();
+    makeChart();
+};
+chartInit();
 
 // modal
 const makeModal = (target, index) => {
@@ -311,29 +519,69 @@ const pagination = () => {
     let prevGroup = (pageGroup - 2) * groupSize + 1;
     let nextGroup = pageGroup * groupSize + 1;
 
-    let paginationHtml = `<button class="prev1" ${
-        pageGroup === 1 ? "disabled" : ""
-    } onClick='fetchGrid1(${prevGroup})'>이전페이지그룹</button>`;
+    const docFrag = document.createDocumentFragment();
 
-    paginationHtml += `<button class="prev1" ${
-        currentPage === 1 ? "disabled" : ""
-    } onClick='fetchGrid1(${currentPage - 1})'>이전</button>`;
+    // 이전페이지그룹 버튼
+    let paginationHtml = document.createElement("button");
+    paginationHtml.classList.add("prev1");
+    pageGroup === 1
+        ? (paginationHtml.disabled = true)
+        : (paginationHtml.disabled = false);
+    paginationHtml.addEventListener("click", () => {
+        fetchGrid1(prevGroup);
+    });
+    paginationHtml.textContent = "이전페이지그룹";
+    docFrag.appendChild(paginationHtml);
 
+    // 이전 버튼
+    paginationHtml = document.createElement("button");
+    paginationHtml.classList.add("prev1");
+    currentPage === 1
+        ? (paginationHtml.disabled = true)
+        : (paginationHtml.disabled = false);
+    paginationHtml.addEventListener("click", () => {
+        fetchGrid1(currentPage - 1);
+    });
+    paginationHtml.textContent = "이전";
+    docFrag.appendChild(paginationHtml);
+
+    // 번호 버튼들
     for (let i = firstPage; i <= lastPage; i++) {
-        paginationHtml += `<button class="${
-            i === currentPage ? "on" : ""
-        }" onClick='fetchGrid1(${i})'>${i}</button>`;
+        paginationHtml = document.createElement("button");
+        if (i === currentPage) paginationHtml.classList.add("on");
+        paginationHtml.addEventListener("click", () => {
+            fetchGrid1(i);
+        });
+        paginationHtml.textContent = i;
+        docFrag.appendChild(paginationHtml);
     }
 
-    paginationHtml += `<button class="next1" ${
-        currentPage === totalPage ? "disabled" : ""
-    } onClick='fetchGrid1(${currentPage + 1})'>다음</button>`;
+    // 다음 버튼
+    paginationHtml = document.createElement("button");
+    paginationHtml.classList.add("next1");
+    currentPage === totalPage
+        ? (paginationHtml.disabled = true)
+        : (paginationHtml.disabled = false);
+    paginationHtml.addEventListener("click", () => {
+        fetchGrid1(currentPage + 1);
+    });
+    paginationHtml.textContent = "다음";
+    docFrag.appendChild(paginationHtml);
 
-    paginationHtml += `<button class="next1" ${
-        pageGroup * groupSize >= totalPage ? "disabled" : ""
-    } onClick='fetchGrid1(${nextGroup})'>다음페이지그룹</button>`;
+    // 다음페이지그룹 버튼
+    paginationHtml = document.createElement("button");
+    paginationHtml.classList.add("next1");
+    pageGroup * groupSize >= totalPage
+        ? (paginationHtml.disabled = true)
+        : (paginationHtml.disabled = false);
+    paginationHtml.addEventListener("click", () => {
+        fetchGrid1(nextGroup);
+    });
+    paginationHtml.textContent = "다음페이지그룹";
+    docFrag.appendChild(paginationHtml);
 
-    document.querySelector(".pg1").innerHTML = paginationHtml;
+    document.querySelector(".pg1").innerHTML = ``;
+    document.querySelector(".pg1").appendChild(docFrag);
 };
 
 // section 1 ul 렌더링
@@ -579,7 +827,7 @@ const fetchGrid2 = async () => {
     }
 };
 
-// init
+// init section 1 ~ 2
 initSelect1();
 fetchGrid1();
 fetchGrid2();

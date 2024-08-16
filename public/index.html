@@ -23,6 +23,7 @@
             defer
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=341f6d49096a1173d8896e9ea960bf84&libraries=services&autoload=false"
         ></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
         <script type="module" src="./config/apikey.js"></script>
         <script type="module" src="./js/common.js"></script>
     </head>
@@ -50,13 +51,55 @@
             <div class="box7"></div>
         </header>
         <main>
+            <section class="sec0">
+                <div class="c_top">
+                    <h2>잠시만 기다려주세요!</h2>
+                    <div class="count">
+                        <article class="countLeft">
+                            <i class="fa-solid fa-bullhorn"></i>
+                            <div>
+                                <span class="countText1">---</span>
+                                <span class="countText2">---</span>
+                            </div>
+                            <p>공고중</p>
+                        </article>
+                        <article class="countRight">
+                            <i class="fa-regular fa-heart"></i>
+                            <div>
+                                <span class="countText1">---</span>
+                                <span class="countText2">---</span>
+                            </div>
+                            <p>보호중</p>
+                        </article>
+                    </div>
+                </div>
+                <div class="c_bot">
+                    <article>
+                        <canvas id="myChart1"></canvas>
+                    </article>
+                    <article>
+                        <canvas id="myChart2"></canvas>
+                    </article>
+                </div>
+            </section>
             <section class="sec1">
                 <div class="s1_top">
                     <img src="./img/dog1.svg" alt="강아지1" />
                     <h2>빨리 찾아가세요<em>!</em></h2>
                     <img src="./img/cat1.svg" alt="고양이1" />
                 </div>
-                <ul id="grid1"></ul>
+                <ul id="grid1">
+                    <li class="list">
+                        <div class="aniImg">
+                            <img src="./img/No_Image.jpg" alt="동물 이미지" />
+                        </div>
+                        <div class="l1">
+                            <div>
+                                <p class="title alone">잠시만 기다려 주세요!</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
                 <div class="pg1"></div>
             </section>
             <section class="sec2">
@@ -82,7 +125,18 @@
                         <option value="null" selected>품종 선택</option>
                     </select>
                 </div>
-                <ul id="grid2"></ul>
+                <ul id="grid2">
+                    <li class="list">
+                        <div class="aniImg">
+                            <img src="./img/No_Image.jpg" alt="동물 이미지" />
+                        </div>
+                        <div class="l1">
+                            <div>
+                                <p class="title alone">잠시만 기다려 주세요!</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
                 <div></div>
                 <div class="loader">
                     <span></span>
