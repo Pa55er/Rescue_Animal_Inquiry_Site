@@ -22,11 +22,7 @@ const $cTopTitle = document.querySelector(".c_top > h2");
 const urlTarget = `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/abandonmentPublic`;
 
 // section 0 url
-let url01 = new Array(7).fill(new URL(urlTarget));
-let url02 = new Array(7).fill(new URL(urlTarget));
-let urlDog = new URL(urlTarget);
-let urlCat = new URL(urlTarget);
-let urlEx = new URL(urlTarget);
+let url0 = new Array(17).fill(new URL(urlTarget));
 
 // section 1 url
 let url1 = new URL(urlTarget);
@@ -209,64 +205,50 @@ const paramsSetting = (target) => {
     target.searchParams.set("serviceKey", DECODING_API_KEY);
 };
 
-// 날짜별 fetch 및 오늘자 개,고양이 현황 fetch
-const fetchChart = async () => {
-    try {
-        // 최근 일주일간 공고중인 개체 수
-        for (let i = 0; i < 7; i++) {
-            paramsSetting(url01[i]);
-            url01[i].searchParams.set("state", "notice");
-            url01[i].searchParams.set("bgnde", chartDates1[i]);
-            url01[i].searchParams.set("endde", chartDates1[i]);
-            const res = await fetch(url01[i]);
-            const data = await res.json();
-            noticeValues.push(data.response.body.totalCount);
-        }
-        // 최근 일주일간 보호중인 개체 수
-        for (let i = 0; i < 7; i++) {
-            paramsSetting(url02[i]);
-            url02[i].searchParams.set("state", "protect");
-            url02[i].searchParams.set("bgnde", chartDates1[i]);
-            url02[i].searchParams.set("endde", chartDates1[i]);
-            const res = await fetch(url02[i]);
-            const data = await res.json();
-            protectValues.push(data.response.body.totalCount);
-        }
-        // 오늘자 "개" 개체 수
-        paramsSetting(urlDog);
-        urlDog.searchParams.set("upkind", 417000);
-        urlDog.searchParams.set("bgnde", today);
-        urlDog.searchParams.set("endde", today);
-        let res = await fetch(urlDog);
-        let data = await res.json();
-        todayDog = data.response.body.totalCount;
-        // 오늘자 "고양이" 개체 수
-        paramsSetting(urlCat);
-        urlCat.searchParams.set("upkind", 422400);
-        urlCat.searchParams.set("bgnde", today);
-        urlCat.searchParams.set("endde", today);
-        res = await fetch(urlCat);
-        data = await res.json();
-        todayCat = data.response.body.totalCount;
-        // 오늘자 "기타" 개체 수
-        paramsSetting(urlEx);
-        urlEx.searchParams.set("upkind", 429900);
-        urlEx.searchParams.set("bgnde", today);
-        urlEx.searchParams.set("endde", today);
-        res = await fetch(urlEx);
-        data = await res.json();
-        todayEx = data.response.body.totalCount;
-    } catch (e) {
-        console.error(e);
-    }
+// line, pie 차트 fetch 병렬 처리 최적화
+const fetchChart = () => {
+    Promise.all(
+        url0.map((ele, index) => {
+            paramsSetting(ele);
+            if (index < 14) {
+                const state = index < 7 ? "notice" : "protect";
+                ele.searchParams.set("state", state);
+                ele.searchParams.set("bgnde", chartDates1[index % 7]);
+                ele.searchParams.set("endde", chartDates1[index % 7]);
+            } else {
+                const upkind =
+                    index === 14 ? 417000 : index === 15 ? 422400 : 429900;
+                ele.searchParams.delete("state");
+                ele.searchParams.set("upkind", upkind);
+                ele.searchParams.set("bgnde", today);
+                ele.searchParams.set("endde", today);
+            }
+            return fetch(ele);
+        })
+    )
+        .then((res) => Promise.all(res.map((res) => res.json())))
+        .then((data) => {
+            data.forEach((ele, index) => {
+                if (index < 14) {
+                    const values = index < 7 ? noticeValues : protectValues;
+                    values.push(ele.response.body.totalCount);
+                } else {
+                    if (index === 14) todayDog = ele.response.body.totalCount;
+                    else if (index === 15)
+                        todayCat = ele.response.body.totalCount;
+                    else todayEx = ele.response.body.totalCount;
+                }
+            });
+            dataSetting();
+            makeChart();
+        })
+        .catch((e) => console.error(e));
 };
 
 // chart에 사용될 데이터 생성 및 렌더링
-const chartInit = async () => {
+const chartInit = () => {
     dateSetting();
-    await fetchChart();
-    dataSetting();
-    makeChart();
+    fetchChart();
 };
 chartInit();
 
