@@ -1,5 +1,5 @@
 {
-    "name": "rescue-animal-inquiry-site",
+    "name": "abandoned-animal-search-service",
     "version": "1.0.0",
     "description": "",
     "main": "server.js",
@@ -9,15 +9,15 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Pa55er/rescue-animal-inquiry-site.git"
+        "url": "git+https://github.com/Pa55er/abandoned-animal-search-service.git"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/Pa55er/rescue-animal-inquiry-site/issues"
+        "url": "https://github.com/Pa55er/abandoned-animal-search-service/issues"
     },
-    "homepage": "https://github.com/Pa55er/rescue-animal-inquiry-site#readme",
+    "homepage": "https://github.com/Pa55er/abandoned-animal-search-service#readme",
     "dependencies": {
         "express": "^4.19.2"
     },
