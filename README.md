@@ -1,9 +1,9 @@
-# 구조동물 조회 사이트
+# 유기동물 조회 웹사이트
 ## 사이트 모습
-<img width="600" alt="1" src="https://github.com/user-attachments/assets/f046bd24-1db3-46ca-a549-7532fffcaa31">
+<img width="600" alt="1" src="https://github.com/user-attachments/assets/97063008-9058-4877-896c-c7a27ed55a3b">
 
 ## 페이지네이션과 무한스크롤
-<img width="600" alt="2" src="https://github.com/user-attachments/assets/3806827d-f7a4-4d7e-8425-dc9e54dfede7">
+<img width="600" alt="2" src="https://github.com/user-attachments/assets/5e823801-b75e-4b83-accb-c39f66a4d2cf">
 
 ## 모달창
 <img width="600" alt="3" src="https://github.com/user-attachments/assets/16bb89cc-e024-4747-bace-fc12eca708f1">
