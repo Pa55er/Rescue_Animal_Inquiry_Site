@@ -1,4 +1,4 @@
-# 구조동물 조회 사이트
+# 유기동물 조회 웹사이트
 ## 사이트 모습
 <img width="600" alt="1" src="https://github.com/user-attachments/assets/97063008-9058-4877-896c-c7a27ed55a3b">
 
