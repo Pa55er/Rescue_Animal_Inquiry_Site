@@ -41,8 +41,9 @@ let url4 = new URL(
 let url5 = new URL(urlTarget);
 
 const today = getToday();
+const busyDate = getBusyDate();
 
-// util 함수들
+// 오늘 날짜 구하는 함수
 function getToday() {
     const date = new Date();
     const year = date.getFullYear();
@@ -52,23 +53,35 @@ function getToday() {
     // return "20240812";
 }
 
-const getDate = (str) => {
-    return str
-        ? str.replace(/(\d{4})(\d{2})(\d{2})/g, "$1.$2.$3")
-        : "접수 날짜 없음";
+// yyyymmdd를 다양한 형태로 format 변환해주는 함수
+const formatDate = (str, format = "YYYY.MM.DD") => {
+    if (!str) return "접수 날짜 없음";
+    const year = str.slice(0, 4);
+    const month = str.slice(4, 6);
+    const day = str.slice(6, 8);
+
+    switch (format) {
+        case "YYYY-MM-DD":
+            return `${year}-${month}-${day}`;
+        case "YYYY년 MM월 DD일":
+            return `${year}년 ${month}월 ${day}일`;
+        default:
+            return `${year}.${month}.${day}`;
+    }
 };
 
-const getDate2 = (str) => {
-    return str
-        ? str.replace(/(\d{4})(\d{2})(\d{2})/g, "$1-$2-$3")
-        : "접수 날짜 없음";
-};
+// 입양이 급한 날짜 생성 함수
+function getBusyDate() {
+    const today = new Date();
+    const currentDate = new Date(today);
+    currentDate.setDate(today.getDate() - 10); // 10일 빼기
 
-const getDate3 = (str) => {
-    return str
-        ? str.replace(/(\d{4})(\d{2})(\d{2})/g, "$1년 $2월 $3일")
-        : "접수 날짜 없음";
-};
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+    const day = String(currentDate.getDate()).padStart(2, "0");
+
+    return `${year}${month}${day}`;
+}
 
 // chart 변수들
 const chartDates1 = new Array(7);
@@ -97,7 +110,10 @@ const dateSetting = () => {
 
 // 오늘자 유기동물현황 렌더링
 const dataSetting = () => {
-    $cTopTitle.textContent = `${getDate3(today)} 유기동물현황`;
+    $cTopTitle.textContent = `${formatDate(
+        today,
+        "YYYY년 MM월 DD일"
+    )} 유기동물현황`;
     $noticeCount.textContent = noticeValues[6];
     $noticeCountDif.textContent =
         noticeValues[6] - noticeValues[5] >= 0
@@ -187,7 +203,10 @@ const makeChart = () => {
                 title: {
                     display: true,
                     // 여기 수정
-                    text: `${getDate3(today)} 축종별 현황`,
+                    text: `${formatDate(
+                        today,
+                        "YYYY년 MM월 DD일"
+                    )} 축종별 현황`,
                     font: {
                         size: 20,
                     },
@@ -259,7 +278,10 @@ const makeModal = (target, index) => {
     let popfile = ani.popfile || "./img/No_Image.jpg";
     let noticeNo = ani.noticeNo || "공고번호 없음";
     let title = ani.kindCd || "제목없음";
-    let period = getDate2(ani.noticeSdt) + " ~ " + getDate2(ani.noticeEdt);
+    let period =
+        formatDate(ani.noticeSdt, "YYYY-MM-DD") +
+        " ~ " +
+        formatDate(ani.noticeEdt, "YYYY-MM-DD");
     let kindCd = ani.kindCd.slice(ani.kindCd.indexOf(" ") + 1) || "정보 없음";
     let sexCd =
         ani.sexCd === "M" ? "수컷" : ani.sexCd === "F" ? "암컷" : "미상";
@@ -267,7 +289,7 @@ const makeModal = (target, index) => {
     let colorCd = ani.colorCd || "정보 없음";
     let weight = ani.weight || "정보 없음";
     let processState = ani.processState || "정보 없음";
-    let happenDt = getDate3(ani.happenDt);
+    let happenDt = formatDate(ani.happenDt, "YYYY년 MM월 DD일");
     let happenPlace = ani.happenPlace || "발견 장소 없음";
     let careNm = ani.careNm || "정보 없음";
     let careAddr = ani.careAddr || "정보 없음";
@@ -444,10 +466,11 @@ const renderGrid1 = () => {
     list1.forEach((list, i) => {
         let urlToImage = list.popfile || "./img/No_Image.jpg";
         let title = list.kindCd || "제목없음";
-        let found = getDate(list.happenDt);
+        let found = formatDate(list.happenDt);
         let num = list.noticeNo || "공고번호 없음";
         let location = list.happenPlace || "발견 장소 없음";
-        let period = getDate(list.noticeSdt) + "~" + getDate(list.noticeEdt);
+        let period =
+            formatDate(list.noticeSdt) + "~" + formatDate(list.noticeEdt);
         const $li = document.createElement("li");
         $li.classList.add("list");
         $li.innerHTML = `
@@ -571,8 +594,8 @@ let list1;
 const fetchGrid1 = async (page = 1) => {
     try {
         url1.searchParams.set("state", "notice");
-        url1.searchParams.set("bgnde", today);
-        url1.searchParams.set("endde", today);
+        url1.searchParams.set("bgnde", busyDate);
+        url1.searchParams.set("endde", busyDate);
         url1.searchParams.set("pageNo", page);
         url1.searchParams.set("numOfRows", pageSize);
         url1.searchParams.set("_type", "json");
@@ -717,10 +740,11 @@ const renderGrid2 = () => {
     target.forEach((list) => {
         let urlToImage = list.popfile || "./img/No_Image.jpg";
         let title = list.kindCd || "제목없음";
-        let found = getDate(list.happenDt);
+        let found = formatDate(list.happenDt);
         let num = list.noticeNo || "공고번호 없음";
         let location = list.happenPlace || "발견 장소 없음";
-        let period = getDate(list.noticeSdt) + "~" + getDate(list.noticeEdt);
+        let period =
+            formatDate(list.noticeSdt) + "~" + formatDate(list.noticeEdt);
         const $li = document.createElement("li");
         $li.classList.add("list");
         $li.innerHTML = `
