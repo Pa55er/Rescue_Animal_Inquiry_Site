@@ -1,8 +1,10 @@
 import config from "../config/apikey.js";
 
+// api key 변수
 const DECODING_API_KEY = config.ABANDONMENTPUBLICSRVC_DECODING_API_KEY;
 const ENCODING_API_KEY = config.ABANDONMENTPUBLICSRVC_ENCODING_API_KEY;
 
+// dom 조작을 위한 변수
 const $grid1 = document.getElementById("grid1");
 const $grid2 = document.getElementById("grid2");
 const $topBtn = document.querySelector(".topBtn");
@@ -19,6 +21,7 @@ const $chart1 = document.getElementById("myChart1");
 const $chart2 = document.getElementById("myChart2");
 const $cTopTitle = document.querySelector(".c_top > h2");
 
+// open api base url
 const urlTarget = `http://apis.data.go.kr/1543061/abandonmentPublicSrvc/abandonmentPublic`;
 
 // section 0 url
@@ -40,6 +43,7 @@ let url4 = new URL(
 );
 let url5 = new URL(urlTarget);
 
+// 날짜 변수
 const today = getToday();
 const busyDate = getBusyDate();
 
