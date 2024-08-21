@@ -464,6 +464,22 @@ const renderNoList = (num) => {
     target.appendChild(docFrag);
 };
 
+// 스켈레톤 로딩
+const skeletonLoading = () => {
+    $grid2.innerHTML = `
+        <li class="list">
+            <div class="aniImg">
+                <img src="./img/No_Image.jpg" alt="동물 이미지" />
+            </div>
+            <div class="l1">
+                <div>
+                    <p class="title alone">잠시만 기다려 주세요!</p>
+                </div>
+            </div>
+        </li>
+    `;
+};
+
 // section 1
 const renderGrid1 = () => {
     const docFrag = document.createDocumentFragment();
@@ -686,12 +702,14 @@ const getSelect2 = async () => {
     }
 };
 $city.addEventListener("change", () => {
+    skeletonLoading();
     getSelect2();
     // 자동 리렌더링
     fetchGrid2();
 });
 
 $district.addEventListener("change", () => {
+    skeletonLoading();
     // 자동 리렌더링
     fetchGrid2();
 });
@@ -719,12 +737,14 @@ const getSelect4 = async () => {
     }
 };
 $species.addEventListener("change", () => {
+    skeletonLoading();
     getSelect4();
     // 자동 리렌더링
     fetchGrid2();
 });
 
 $cultivar.addEventListener("change", () => {
+    skeletonLoading();
     // 자동 리렌더링
     fetchGrid2();
 });
